@@ -1,0 +1,35 @@
+import os
+import shutil
+
+# Mapping for band index to descriptive names
+band_map = {
+    "A": "HF",
+    "B": "LF1",
+    "C": "LF2",
+    "D": "LF3",
+    "E": "LF4",
+    "F": "free",
+    "G": "LF5"
+}
+
+# List all .ats files in current directory
+files = [f for f in os.listdir(".") if f.endswith(".ats") and os.path.isfile(f)]
+
+for file in files:
+    run_num = file[4:6]              # characters 4–5
+    band_char = file[7:8]            # character 7
+    band_name = band_map.get(band_char)
+
+    if run_num and band_name:
+        # Folder name: Run<run>_<band>
+        folder = f"Run{int(run_num)}_{band_name}"
+        os.makedirs(folder, exist_ok=True)
+
+        # Move file into folder
+        shutil.move(file, os.path.join(folder, file))
+
+        print(f"Moved {file} → {folder}/")
+    else:
+        print(f"Skipped {file}: cannot determine run or band")
+
+print("✅ Segregation complete (flat structure).")
